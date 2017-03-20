@@ -1,0 +1,485 @@
+\documentclass[10pt,compress]{beamer}
+\usetheme{Berlin}
+% other themes: AnnArbor, Antibes, Bergen, Berkeley, Berlin, Boadilla, boxes, CambridgeUS, Copenhagen, Darmstadt, default, Dresden, Frankfurt, Goettingen,
+% Hannover, Ilmenau, JuanLesPins, Luebeck, Madrid, Maloe, Marburg, Montpellier, PaloAlto, Pittsburg, Rochester, Singapore, Szeged, Warsaw classic
+
+\usecolortheme{seahorse}
+% color themes: albatross, beaver, beetle, crane, default, dolphin, dov, fly, lily, orchid, rose, seagull, seahorse, sidebartab, structure, whale, wolverine
+
+%\usefonttheme{serif}
+% font themes: default, professionalfonts, serif, structurebold, structureitalicserif, structuresmallcapsserif
+
+\usepackage[utf8x]{inputenc}
+\usepackage{ucs}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{animate}
+
+\hypersetup{pdfpagemode=FullScreen} % makes your presentation go automatically to full screen
+
+%\title{\bf HPC User Group of Orlando\\~}
+%\subtitle{\textnormal{Introduction to SLURM}}
+%\author[Wiegand]{\scriptsize %
+%    R. Paul Wiegand\\
+%   Institute for Simulation \& Training\\
+%    University of Central Florida\\
+%    \href{mailto:wiegand@ist.ucf.edu}{wiegand@ist.ucf.edu}
+%} 
+
+
+
+\author[Armando, Paul, Nicholas]{ \textbf{Armando Fandango} \\R. Paul wiegand \\Nicholas Lucas}
+
+\title[SLURM]{\textbf{Let us learn SLURM}}
+\subtitle{A Hands-on Workshop for SLURM on UCF ARCC Clusters}
+%\setbeamercovered{transparent} 
+%\setbeamertemplate{navigation symbols}{} 
+%\logo{} 
+\institute[ARCC, UCF]{
+  Advanced Research Computing Center \\
+  Institute for Simulation \& Training \\
+  University of Central Florida
+} 
+\date{January 2015}
+
+%\subject{subject} 
+
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortauthor\ ( \insertshortinstitute )
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.6\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+   \usebeamerfont{title in head/foot}\insertshorttitle\hspace*{3em}
+  \end{beamercolorbox}}%
+  \vskip0pt%
+}
+\makeatletter
+    \newenvironment{withoutheadline}{
+        \setbeamertemplate{headline}[default]
+        \def\beamer@entrycode{\vspace*{-\headheight}}
+    }{}
+\makeatother
+
+\begin{document}
+
+%\frame{\titlepage}
+
+\begin{frame}[plain]
+\titlepage
+\end{frame}
+
+%\section[Outline]{}
+%\frame{\tableofcontents}
+\begin{withoutheadline}
+\begin{frame}{Topics for Today}
+\tableofcontents
+\end{frame}
+\end{withoutheadline}
+
+\section{Introduction}
+\subsection*{}
+
+\begin{frame}[<+->]{What is SLURM?}
+\begin{itemize}\setlength{\itemsep}{1.5em}%\small
+  \item \textbf{S}imple \textbf{L}inux \textbf{U}tility for \textbf{R}esource \textbf{M}anagement 
+  \item 2-in-1: resource manager and scheduler, and so replaces Torque \& Moab
+  \item Specially designed for Linux clusters 
+  \item Designed to be portable, scalable, fault-tolerant, and \emph{simple}
+  \item Open-Source : \url{git://github.com/SchedMD/slurm.git}	
+  \item Widely adopted by HPCs around the country (and the world)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[<+->]{What is the change for STOKES Users?}
+\begin{itemize}\setlength{\itemsep}{1.5em}%\small
+  \item All basic scheduler commands are different
+  \item Submit script directives \& syntax must be changed \\ \bigskip
+  {\small\color{red} \textit{Yes, you will have to rewrite your submit scripts}}
+  \item That's what we are going to learn today \\ \bigskip
+  \textit{SLURM commands and Scripts} :-) 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{}
+ 
+ \begin{columns}[c]
+    \column{.7\textwidth}
+        \begin{center}
+            \includegraphics[width=\textwidth]{images/sleepy-lecture.png} 
+        \end{center}
+        \pause
+    \column{.3\textwidth}
+        \begin{center}
+             \includegraphics[width=\textwidth]{images/cat-on-computer.jpg}\\
+             So.. Open your computers and login to stokes.
+        \end{center}
+\end{columns}
+
+\end{frame}
+
+
+\section{Commands}
+\subsection{How to Run Jobs}
+
+\begin{frame}{How to run Jobs?}
+
+%\includegraphics[scale=1]{images/run-run.gif} 
+
+
+\begin{columns}[c]
+    \column{.5\textwidth}
+        \begin{center}
+          \begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \item srun
+  \item sbatch
+  \item salloc
+\end{itemize}
+        \end{center}
+    \column{.5\textwidth}
+        \begin{center}
+             \animategraphics[loop,autoplay,width=\textwidth]{16}{images/run--}{0}{288}
+        \end{center}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{srun}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item Try this: \texttt{srun hostname}
+  \pause
+  \item Try this:  \texttt{srun -N 2 hostname}
+  \pause
+  \item Try this:  \texttt{srun -n 2 hostname}
+  \pause
+  \item Try this:  \texttt{srun -N 2 -n 2 hostname}
+  \pause
+  \item Try this:  \texttt{srun -N 2 -n 4 hostname}
+  \pause
+  \item  \texttt{-N} or \texttt {--nodes} : number of nodes
+  \pause
+  \item  \texttt{-n} or \texttt{--ntasks} : number of tasks
+  \pause
+  \item Best Practice: use either {-n or -N} with --ntasks-per-node
+  \end{itemize}
+\end{frame}
+
+
+  \begin{frame}{srun - more options}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item  \texttt{--label} : prepend task-id to output
+  \pause
+  \item Try this:  \texttt{srun -N 2 -n 4 --label hostname}
+  \pause
+  \item  \texttt{--ntasks-per-node} : number of tasks per node
+    \pause
+  \item \texttt{ -c} or \texttt{--cpus-per-task} : number of cores per task
+    \pause
+  \item \texttt{ -w} or \texttt{--nodelist} : specific nodes to be allocated
+    \pause
+  \item \texttt{ -x} or \texttt{--exclude} : specific nodes not to be allocated
+\end{itemize}
+\end{frame}
+
+\begin{frame}{srun - even more options}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item \texttt{--time}
+  \pause  
+  \item \texttt{--account}
+    \pause
+  \item \texttt{--output}
+    \pause
+  \item \texttt{--job-name}
+    \pause
+  \item \texttt{--mem}
+    \pause
+  \item \texttt{--mem-per-cpu}
+    \pause
+  \item \texttt{man srun} or \texttt{srun --help} :  to read manual for more options  
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{salloc}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item Try this:  \texttt{salloc hostname}
+  \pause
+  \item Try this:  \texttt{salloc}
+  \pause
+   \item Try this: \texttt{srun hostname}
+   \pause
+  \item salloc is almost same as srun !!!!
+  \pause
+  \item salloc only reserves nodes and starts a shell
+  \pause
+  \item srun runs the --number-of-tasks-- copies of your app
+\end{itemize}
+\end{frame}
+
+\subsection{How to get Interactive Session}
+
+\begin{frame}{interactive sessions with srun}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item Try this: \texttt{srun --pty bash}
+  %\pause
+   %\item For X-window: \texttt{srun --x11} // X11 option not yet implemented on stokes.. but keep an eye for future.
+   
+\end{itemize}
+\end{frame}
+
+\begin{frame}{interactive sessions with salloc}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+   \item Get allocation and note job-id: \texttt{salloc}
+   \pause
+   \item Get node: \texttt{squeue --job <job-id>}
+   \pause
+   \item ssh into node. \texttt{ssh ec<node-id>}
+   \pause
+   \item load module: \texttt{module load starccm}
+   \pause
+   \item run: \texttt{starccm+}
+   \pause
+   \item ssh into node. \texttt{ssh -X ec<node-id>}
+   \pause
+   \item load module: \texttt{module load starccm}
+   \pause
+   \item run: \texttt{starccm+}
+      
+\end{itemize}
+\end{frame}
+
+
+\subsection{How to Monitor Jobs}
+\begin{frame}{squeue}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item Open two terminal windows side by side and try following commands
+  \pause
+  \item Terminal Window 1
+  \begin{itemize}
+    \item \texttt{watch "squeue -t all"}
+  \end{itemize}  
+  \pause
+  \item Terminal Window 2
+   \begin{itemize}
+     \item \texttt{srun -N 2 sleep 60 \&}
+      \item \texttt{srun -N 4 uptime}
+       \item \texttt{srun -N 2 hostname}
+       \end{itemize}
+  \pause
+  \item Do you see the jobs come and go in Window 1 ?
+\end{itemize}
+\end{frame}
+
+
+\subsection{How to Get Information}
+
+\begin{frame}{scontrol show}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item Try this:  \texttt{scontrol show partition}
+  \pause
+  \item Try this: \texttt{scontrol show job}
+  \pause
+  \item  Run this: \texttt{srun -N 2 sleep 60 \&}
+  \pause
+  \item  Get the job id: \texttt{squeue --user=`whoami`}
+  \pause
+  \item  Now run this: \texttt{scontrol --detail show job <job-id>}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{sinfo}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \item a "queue" is called \textit{partition} in SLURM
+  \pause
+  \item Try this : \texttt{sinfo}
+  \pause
+  \item Try this:  \texttt{sinfo -all}
+  \pause
+  \item Try this: \texttt{sinfo -Node}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{sacct}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item  Try this: \texttt{sacct}
+  \pause
+  \item  Try this: \texttt{sacct -j <job-id>}
+  \pause
+  \item  Try this: \texttt{sacct  --long  -j <job-id>}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{sshare \& sreport}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item  Try this: \texttt{sshare}
+  \pause
+  \item  Try this: \texttt{sshare -l}
+   \pause
+  \item  Try this: \texttt{sreport -a cluster AccountUtilizationByUser Tree}
+\end{itemize}
+\end{frame}
+
+
+
+\subsection{How to Manage Jobs}
+
+\begin{frame}{scancel}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item  Run this: \texttt{srun -N 2 sleep 60 \&}
+  \pause
+  \item  Get the job id: \texttt{squeue --user=`whoami`}
+  \pause
+  \item  \texttt{scancel <job-id>}
+  \pause
+  \item  Now run this: \texttt{squeue --user=`whoami`}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{scontrol}
+\begin{itemize} \setlength{\itemsep}{1.5em}%\small
+  \pause
+  \item  Run this: \texttt{srun -N 2 sleep 60 \&}
+  \pause
+  \item  Get the job id: \texttt{squeue --user=`whoami`}
+  \pause
+  \item  \texttt{scontrol hold <job-id>}
+  \pause
+  \item  Now run this: \texttt{squeue --user=`whoami`}
+   \pause
+  \item  \texttt{scontrol release <job-id>}
+  \pause
+  \item  Now run this: \texttt{squeue --user=`whoami`}
+  \pause
+  \item  \texttt{scontrol requeue <job-id>}
+  \pause
+  \item  Now run this: \texttt{squeue --user=`whoami`}
+\end{itemize}
+\end{frame}
+
+
+\section{Scripts}
+\subsection{How to write Batch Job Scripts}
+\begin{frame}[fragile]{Batch Job Script}
+
+  Its nothing new !!!! Put together what you learnt so far.
+  
+  {\scriptsize
+   \begin{verbatim}
+#!/bin/bash
+#SBATCH --account=arcc
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=2
+#SBATCH --time=00:10:00
+#SBATCH --error=rpwslurm-%J.err
+#SBATCH --output=rpwslurm-%J.out
+#SBATCH --job-name=PaulSlurmMPIJob
+#SBATCH --mail-type=FAIL
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-user rpwiegand@gmail.com
+
+# Load modules
+module load openmpi/openmpi
+
+# Output Information
+echo "Slurm nodes: $SLURM_JOB_NODELIST"
+
+# Run your app
+mpirun ./hello
+
+  \end{verbatim}
+}
+\end{frame}
+
+\subsection{How to get NodeList}
+
+\begin{frame}[fragile]{Getting NodeList}
+My application requires NODEFILE or MACHINEFILE
+\pause
+\begin{itemize}
+    \item  Get nodes: \verb.salloc -N 2 -n 6. 
+ \end{itemize}
+  \pause
+\bigskip
+ {
+  \scriptsize
+   
+  \verb.echo $SLURM_JOB_NODELIST. \\
+  \pause
+  \verb-ec[3,6]-
+  \pause
+  \\\ \\
+   \verb.export NODELIST=`srun hostname | sort` ; echo $NODELIST. \\
+  \pause
+  \verb-ec3 ec3 ec3 ec3 ec6 ec6-
+  \pause
+\\\ \\
+     \verb.export NODELIST=`srun hostname | sort -u` ; echo $NODELIST. \\
+  \pause
+  \verb-ec3 ec6-
+  \pause
+\\\ \\
+     \verb.export NODELIST=`srun hostname | sort -u | sed s/"ec"/"ic"/ ` ; echo $NODELIST.\\
+  \pause
+  \verb-ic3 ic6-
+\pause
+\\\ \\
+     \verb.export NODELIST=`srun hostname | sort -u | sed s/"ec"/"ic"/ |.
+     \verb.                             tr '\n' ',' | sed s/",$"//` ; echo $NODELIST.\\
+  \pause
+  \verb-ic3,ic6-
+  }
+
+  
+  
+
+\end{frame}
+
+
+\section{Conclusion}
+
+\begin{frame}{Final Thoughts}
+We hope this will enable you to start writing your own slurm scripts.
+\pause \\
+\bigskip
+Use the SLURM documentation at \url{http://slurm.schedmd.com/}.\\
+\pause
+\bigskip
+Stay Tuned: \\ Advanced SLURM workshop : Job Arrays, Newton (GPGPU and Phi), Job Sequencing, Task-Core-Node Allocation Strategies, and more.\\
+
+\end{frame}
+\begin{frame}{Questions}
+\center{
+\includegraphics[width=\textwidth]{images/questions.jpg} 
+}
+\end{frame}
+
+\begin{frame}{Thanks}
+\center{
+Thanks for coming today.
+\\ \bigskip
+email us: \url{request-stokes@ist.ucf.edu}
+}
+\end{frame}
+
+
+
+%\section{References}
+
+
+\end{document}
